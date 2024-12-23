@@ -15,3 +15,6 @@ Orgatization often struggle to organize and mangae event efficentily. This is a 
 ->node index.html
 ->npm install mongoose ,dotenv,jsonwebtoken,express,zod,bcrypt
 ->npx http-server --cors
+
+**NOTE**
+TO GET ALL THE DOCUMENTS IN THE STRUCTURED WAY, DOWNDLOAD THE EventManager-main.zip
