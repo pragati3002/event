@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Signup & Login</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f9;
+            margin: 0;
+            padding: 0;
+        }
+
+        .container {
+            width: 300px;
+            margin: 100px auto;
+            padding: 20px;
+            background-color: #fff;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            border-radius: 8px;
+        }
+
+        h2 {
+            text-align: center;
+        }
+
+        .input-container {
+            margin: 10px 0;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 5px;
+        }
+
+        input {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+
+        button {
+            width: 100%;
+            padding: 10px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background-color: #45a049;
+        }
+
+        p {
+            text-align: center;
+        }
+
+        a {
+            color: #4CAF50;
+            text-decoration: none;
+        }
+
+        a:hover {
+            text-decoration: underline;
+        }
+
+        .switch {
+            text-align: center;
+            margin-top: 10px;
+        }
+
+        .switch a {
+            font-size: 14px;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container" id="formContainer">
+        <h2 id="formTitle">Signup</h2>
+        <form id="authForm">
+            <div class="input-container">
+                <label for="email">Email:</label>
+                <input type="email" id="email" name="email" required />
+            </div>
+            <div class="input-container">
+                <label for="password">Password:</label>
+                <input type="password" id="password" name="password" required />
+            </div>
+            <div class="input-container" id="firstNameContainer">
+                <label for="firstName">First Name:</label>
+                <input type="text" id="firstName" name="firstName" required />
+            </div>
+            <div class="input-container" id="lastNameContainer">
+                <label for="lastName">Last Name:</label>
+                <input type="text" id="lastName" name="lastName" required />
+            </div>
+            <button type="submit" id="submitButton">Signup</button>
+            <p class="switch">Already have an account? <a href="#" onclick="switchForm('login')">Login</a></p>
+        </form>
+    </div>
+
+    <script>
+        // Switch between Signup and Login
+        function switchForm(formType) {
+            const formContainer = document.getElementById('formContainer');
+            const formTitle = document.getElementById('formTitle');
+            const submitButton = document.getElementById('submitButton');
+            const firstNameContainer = document.getElementById('firstNameContainer');
+            const lastNameContainer = document.getElementById('lastNameContainer');
+            const firstNameField = document.getElementById('firstName');
+            const lastNameField = document.getElementById('lastName');
+            
+            if (formType === 'login') {
+                formTitle.textContent = 'Login';
+                submitButton.textContent = 'Login';
+                firstNameContainer.style.display = 'none';
+                lastNameContainer.style.display = 'none';
+                firstNameField.removeAttribute('required');
+                lastNameField.removeAttribute('required');
+                document.getElementById('authForm').setAttribute('action', '#');
+                document.getElementById('authForm').removeEventListener('submit', handleSignup);
+                document.getElementById('authForm').addEventListener('submit', handleLogin);
+                document.querySelector('.switch a').textContent = "Don't have an account? Signup";
+            } else {
+                formTitle.textContent = 'Signup';
+                submitButton.textContent = 'Signup';
+                firstNameContainer.style.display = 'block';
+                lastNameContainer.style.display = 'block';
+                firstNameField.setAttribute('required', 'required');
+                lastNameField.setAttribute('required', 'required');
+                document.getElementById('authForm').setAttribute('action', '#');
+                document.getElementById('authForm').removeEventListener('submit', handleLogin);
+                document.getElementById('authForm').addEventListener('submit', handleSignup);
+                document.querySelector('.switch a').textContent = "Already have an account? Login";
+            }
+        }
+
+        // Handle Signup
+        async function handleSignup(event) {
+            event.preventDefault();
+
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+            const firstName = document.getElementById('firstName').value;
+            const lastName = document.getElementById('lastName').value;
+
+            try {
+                const response = await fetch('http://localhost:4002/home/Signup', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ email, password, firstName, lastName })
+                });
+
+                const data = await response.json();
+                if (response.ok) {
+                    alert('Signup successful');
+                    switchForm('login'); // Switch to login form after successful signup
+                } else {
+                    alert(`Signup failed: ${data.message}`);
+                }
+            } catch (error) {
+                console.error('Error during signup:', error);
+                alert('Signup failed: Unable to reach server');
+            }
+        }
+
+        // Handle Login
+        async function handleLogin(event) {
+            event.preventDefault();
+
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+
+            try {
+                const response = await fetch('http://localhost:4002/home/LogIn', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ email, password })
+                });
+
+                const data = await response.json();
+                if (response.ok) {
+                    alert('Login successful');
+                    localStorage.setItem('token', data.token);  // Save token in local storage
+                    window.location.href = 'htmlv.html'; // Redirect to htmlv.html after login
+                } else {
+                    alert(`Login failed: ${data.message}`);
+                }
+            } catch (error) {
+                console.error('Error during login:', error);
+                alert('Login failed: Unable to reach server');
+            }
+        }
+
+        // Initialize form
+        document.getElementById('authForm').addEventListener('submit', handleSignup);
+    </script>
+</body>
+</html>

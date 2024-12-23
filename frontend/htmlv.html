@@ -1,0 +1,464 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Event Management Dashboard</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f9;
+        }
+        header {
+            background-color: #4CAF50;
+            color: white;
+            padding: 10px 20px;
+            text-align: center;
+        }
+        .container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+            padding: 20px;
+        }
+        .card {
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+            flex: 1 1 calc(33% - 40px);
+            box-sizing: border-box;
+        }
+        .card h3 {
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+            flex: 1 1 calc(33% - 40px);
+            box-sizing: border-box;
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+        }
+        .form-group input, .form-group textarea, .form-group select {
+            width: 100%;
+            padding: 8px;
+            box-sizing: border-box;
+        }
+        .btn {
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            cursor: pointer;
+            border-radius: 5px;
+        }
+        .btn:hover {
+            background-color: #45a049;
+        }
+        .event-list {
+            list-style: none;
+            padding: 0;
+        }
+        .event-list li {
+            background: #f9f9f9;
+            margin: 5px 0;
+            padding: 10px;
+            border-left: 4px solid #4CAF50;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .event-actions button {
+            margin-left: 10px;
+            background-color: #007BFF;
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            border-radius: 3px;
+            cursor: pointer;
+        }
+        .event-actions button:hover {
+            background-color: #0056b3;
+        }
+        .event-actions .delete-btn {
+            background-color: #DC3545;
+        }
+        .event-actions .delete-btn:hover {
+            background-color: #a71d2a;
+        }
+        .attendee-actions button {
+            margin-left: 10px;
+            background-color: #DC3545;
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            border-radius: 3px;
+            cursor: pointer;
+        }
+        .attendee-actions button:hover {
+            background-color: #a71d2a;
+        }
+        .task-actions button {
+            margin-left: 10px;
+            background-color: #007BFF;
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            border-radius: 3px;
+            cursor: pointer;
+        }
+        .task-actions button:hover {
+            background-color: #0056b3;
+        }
+        .task-status-dropdown {
+            padding: 5px;
+            border-radius: 3px;
+            cursor: pointer;
+        }
+        .task-status {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 5px;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Event Management Dashboard</h1>
+    </header>
+
+    <div class="container">
+        <!-- Combined Event Details and Add Event Form -->
+        <div class="card">
+            <h3>Upcoming Events</h3>
+            <ul class="event-list" id="eventList">
+                
+            </ul>
+
+            <h3>Add New Event</h3>
+            <form id="eventForm">
+                <div class="form-group">
+                    <label for="eventName">Event Name</label>
+                    <input type="text" id="eventName" required>
+                </div>
+                <div class="form-group">
+                    <label for="eventDescription">Description</label>
+                    <textarea id="eventDescription" rows="4" required></textarea>
+                </div>
+                <div class="form-group">
+                    <label for="eventLocation">Location</label>
+                    <input type="text" id="eventLocation" required>
+                </div>
+                <div class="form-group">
+                    <label for="eventDate">Date</label>
+                    <input type="date" id="eventDate" required>
+                </div>
+                <button type="submit" class="btn">Add Event</button>
+            </form>
+        </div>
+
+        <!-- Attendee List -->
+        <div class="card">
+            <h3>Attendee List</h3>
+            <ul class="event-list" id="attendeeList">
+                
+            </ul>
+
+            <form id="attendeeForm">
+                <div class="form-group">
+                    <label for="attendeeName">Add Attendee</label>
+                    <input type="text" id="attendeeName" placeholder="Enter attendee name" required>
+                </div>
+                <div class="form-group">
+                    <label for="attendeeEvent">Assign Event</label>
+                    <select id="attendeeEvent" required>
+                        <option value="">Select Event</option>
+                    </select>
+                </div>
+                <button type="submit" class="btn">Add Attendee</button>
+            </form>
+        </div>
+
+        <!-- Task Tracker -->
+        <div class="card">
+            <h3>Task Tracker</h3>
+            <div id="taskTracker">
+                <!-- Task lists for each event will be displayed here -->
+            </div>
+
+            <form id="taskForm">
+                <div class="form-group">
+                    <label for="taskDescription">Task Description</label>
+                    <input type="text" id="taskDescription" placeholder="Enter task description" required>
+                </div>
+                <div class="form-group">
+                    <label for="taskDeadline">Task Deadline</label>
+                    <input type="date" id="taskDeadline" required>
+                </div>
+                <div class="form-group">
+                    <label for="taskAttendee">Assign to Attendee</label>
+                    <select id="taskAttendee" required>
+                        <option value="">Select Attendee</option>
+                        <!-- Options will be dynamically populated -->
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="taskEvent">Assign to Event</label>
+                    <select id="taskEvent" required>
+                        <option value="">Select Event</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="taskStatus">Task Status</label>
+                    <select id="taskStatus" class="task-status-dropdown" required>
+                        <option value="Pending">Pending</option>
+                        <option value="Completed">Completed</option>
+                    </select>
+                </div>
+                <button type="submit" class="btn">Add Task</button>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        // Function to get current date in IST (Indian Standard Time)
+        function getISTDate() {
+            const date = new Date();
+            const offset = 5.5 * 60; // IST is UTC +5:30
+            const localOffset = date.getTimezoneOffset();
+            const offsetInMinutes = (localOffset + offset) * 60000; // Convert to milliseconds
+            const istDate = new Date(date.getTime() + offsetInMinutes);
+            return istDate.toISOString().split('T')[0]; // Return date in YYYY-MM-DD format
+        }
+
+        // Set the 'min' attribute of the event date input to current date in IST
+        const eventDateInput = document.getElementById('eventDate');
+        eventDateInput.setAttribute('min', getISTDate());
+
+        // Set the 'min' attribute of the task deadline input to current date in IST
+        const taskDeadlineInput = document.getElementById('taskDeadline');
+        taskDeadlineInput.setAttribute('min', getISTDate());
+
+        const eventForm = document.getElementById('eventForm');
+        const eventList = document.getElementById('eventList');
+        const attendeeForm = document.getElementById('attendeeForm');
+        const attendeeList = document.getElementById('attendeeList');
+        const attendeeEvent = document.getElementById('attendeeEvent');
+        const taskForm = document.getElementById('taskForm');
+        const taskDescription = document.getElementById('taskDescription');
+        const taskDeadline = document.getElementById('taskDeadline');
+        const taskAttendee = document.getElementById('taskAttendee');
+        const taskEvent = document.getElementById('taskEvent');
+        const taskStatus = document.getElementById('taskStatus');
+        const taskTracker = document.getElementById('taskTracker');
+
+        let editMode = null; // Tracks the event being edited
+        let events = []; // To store events for assigning to attendees and tasks
+        let attendees = []; // To store attendees
+        let tasks = {}; // To store tasks for each event
+
+        eventForm.addEventListener('submit', function (e) {
+            e.preventDefault();
+
+            const eventName = document.getElementById('eventName').value;
+            const eventDescription = document.getElementById('eventDescription').value;
+            const eventLocation = document.getElementById('eventLocation').value;
+            const eventDate = document.getElementById('eventDate').value;
+
+            const event = {
+                name: eventName,
+                description: eventDescription,
+                location: eventLocation,
+                date: eventDate
+            };
+
+            if (editMode) {
+                // Update existing event
+                editMode.querySelector('span').textContent =` ${eventName}: ${eventDescription} | Location: ${eventLocation} | Date: ${eventDate}`;
+                editMode = null; // Exit edit mode
+            } else {
+                // Add new event
+                const newEvent = document.createElement('li');
+                newEvent.innerHTML = `
+                    <span>${eventName}: ${eventDescription} | Location: ${eventLocation} | Date: ${eventDate}</span>
+                    <div class="event-actions">
+                        <button class="edit-btn">Edit</button>
+                        <button class="delete-btn">Delete</button>
+                    </div>
+                `;
+                eventList.appendChild(newEvent);
+
+                events.push(event); // Store event in array
+                tasks[eventName] = []; // Initialize task list for the event
+                updateAttendeeEventOptions();
+                updateTaskEventOptions();
+            }
+
+            eventForm.reset();
+        });
+
+        eventList.addEventListener('click', function (e) {
+            if (e.target.classList.contains('delete-btn')) {
+                const eventItem = e.target.closest('li');
+                eventList.removeChild(eventItem);
+                const eventIndex = events.findIndex(event => `${event.name}: ${event.description} === eventItem.querySelector('span').textContent.split(' | ')[0]`);
+                if (eventIndex !== -1) {
+                    tasks[events[eventIndex].name] = []; // Clear tasks for deleted event
+                    events.splice(eventIndex, 1);
+                }
+                updateAttendeeEventOptions();
+                updateTaskEventOptions();
+            } else if (e.target.classList.contains('edit-btn')) {
+                const eventItem = e.target.closest('li');
+                const eventDetails = eventItem.querySelector('span').textContent;
+                const [details, locationPart, datePart] = eventDetails.split(' | ');
+                const [name, description] = details.split(': ');
+
+                document.getElementById('eventName').value = name;
+                document.getElementById('eventDescription').value = description;
+                document.getElementById('eventLocation').value = locationPart.split(': ')[1];
+                document.getElementById('eventDate').value = datePart.split(': ')[1];
+
+                editMode = eventItem; // Set edit mode
+            }
+        });
+
+        attendeeForm.addEventListener('submit', function (e) {
+            e.preventDefault();
+
+            const attendeeName = document.getElementById('attendeeName').value;
+            const selectedEventIndex = document.getElementById('attendeeEvent').value;
+            const eventName = selectedEventIndex !== "" ? events[selectedEventIndex].name : "None";
+
+            const newAttendee = document.createElement('li');
+            newAttendee.innerHTML = `
+                ${attendeeName} | Assigned Event: ${eventName}
+                <div class="attendee-actions">
+                    <button class="remove-btn">Remove</button>
+                </div>
+            `;
+
+            attendeeList.appendChild(newAttendee);
+            attendees.push({ name: attendeeName, event: eventName });
+            updateTaskAttendeeOptions();
+            attendeeForm.reset();
+        });
+
+        attendeeList.addEventListener('click', function (e) {
+            if (e.target.classList.contains('remove-btn')) {
+                const attendeeItem = e.target.closest('li');
+                attendeeList.removeChild(attendeeItem);
+                const attendeeName = attendeeItem.textContent.split(' | ')[0];
+                const attendeeIndex = attendees.findIndex(attendee => attendee.name === attendeeName);
+                if (attendeeIndex !== -1) {
+                    attendees.splice(attendeeIndex, 1);
+                }
+                updateTaskAttendeeOptions();
+            }
+        });
+
+        taskForm.addEventListener('submit', function (e) {
+            e.preventDefault();
+
+            const taskDescriptionValue = taskDescription.value;
+            const taskDeadlineValue = taskDeadline.value;
+            const taskAttendeeValue = taskAttendee.value;
+            const taskEventValue = taskEvent.value;
+            const taskStatusValue = taskStatus.value;
+
+            const task = {
+                description: taskDescriptionValue,
+                deadline: taskDeadlineValue,
+                attendee: attendees[taskAttendeeValue]?.name || 'Not assigned',
+                status: taskStatusValue
+            };
+
+            if (taskEventValue) {
+                tasks[events[taskEventValue].name].push(task);
+                updateTaskList(events[taskEventValue].name);
+            }
+
+            taskForm.reset();
+        });
+
+        // Helper function to update Event options for Attendees and Tasks
+        function updateAttendeeEventOptions() {
+            const attendeeEventSelect = document.getElementById('attendeeEvent');
+            attendeeEventSelect.innerHTML = '<option value="">Select Event</option>';
+            events.forEach((event, index) => {
+                const option = document.createElement('option');
+                option.value = index;
+                option.textContent = event.name;
+                attendeeEventSelect.appendChild(option);
+            });
+        }
+
+        // Helper function to update Event options for Tasks
+        function updateTaskEventOptions() {
+            const taskEventSelect = document.getElementById('taskEvent');
+            taskEventSelect.innerHTML = '<option value="">Select Event</option>';
+            events.forEach((event, index) => {
+                const option = document.createElement('option');
+                option.value = index;
+                option.textContent = event.name;
+                taskEventSelect.appendChild(option);
+            });
+        }
+
+        // Helper function to update Attendee options for Tasks
+        function updateTaskAttendeeOptions() {
+            const taskAttendeeSelect = document.getElementById('taskAttendee');
+            taskAttendeeSelect.innerHTML = '<option value="">Select Attendee</option>';
+            attendees.forEach((attendee, index) => {
+                const option = document.createElement('option');
+                option.value = index;
+                option.textContent = attendee.name;
+                taskAttendeeSelect.appendChild(option);
+            });
+        }
+
+        // Helper function to update Task list for each Event
+        function updateTaskList(eventName) {
+            const eventTasks = tasks[eventName];
+            let taskHTML = '<h4>Tasks for ' + eventName + '</h4>';
+            eventTasks.forEach(task => {
+                taskHTML += `
+                    <div class="task-status">
+                        <span>${task.description} | Due: ${task.deadline} | Assigned to: ${task.attendee}</span>
+                        <div class="form-group">
+                            <label for="taskStatus_${task.description}">Status</label>
+                            <select class="task-status-dropdown" id="taskStatus_${task.description}" data-task="${task.description}">
+                                <option value="Pending" ${task.status === 'Pending' ? 'selected' : ''}>Pending</option>
+                                <option value="Completed" ${task.status === 'Completed' ? 'selected' : ''}>Completed</option>
+                            </select>
+                        </div>
+                    </div>
+                `;
+            });
+            taskTracker.innerHTML = taskHTML;
+
+            // Add event listener to update task status
+            document.querySelectorAll('.task-status-dropdown').forEach(dropdown => {
+                dropdown.addEventListener('change', function (e) {
+                    const taskDescription = e.target.getAttribute('data-task');
+                    const newStatus = e.target.value;
+
+                    // Find the task and update its status
+                    const task = tasks[eventName].find(t => t.description === taskDescription);
+                    if (task) {
+                        task.status = newStatus;
+                    }
+                });
+            });
+        }
+    </script>
+</body>
+</html>
