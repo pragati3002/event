@@ -17,4 +17,5 @@ Orgatization often struggle to organize and mangae event efficentily. This is a 
 ->npx http-server --cors
 
 **NOTE**
+
 TO GET ALL THE DOCUMENTS IN THE STRUCTURED WAY, DOWNDLOAD THE EventManager-main.zip
